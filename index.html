@@ -1,0 +1,59 @@
+<!doctype html>
+<html>
+<head>
+	<title>Uploader</title>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
+	<link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="css/main.css" />
+</head>
+
+<body>
+
+	<h1>Hot-spot Mapper</h1>
+	<p> Drag on the image below to set hot-spots</p>
+
+
+	<div id="container">
+		<div class="row">
+			<div class="span8">
+				<img class="image-map" src="img/Shipping-Labor-MHA.jpeg" />
+
+
+			</div>
+
+			<div class="span4" id="rightCol">
+				<label>Enter URL</label>
+				<input type="text" id="urlInput" /><br/>
+				<button id="applyMappingBtn" class="btn btn-primary">Apply Mapping</button>
+			</div>
+
+		</div>
+
+
+	</div>
+
+	
+
+	<script src="script/imageMapper.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function() {
+			console.log('here');
+			$.imageMapper({
+				onDrag: function(coordinates) {
+					
+				}
+			});
+
+			$('#applyMappingBtn').click(function() {
+				var url = processUrl($('#urlInput').val());
+				$.imageMapper('insertMap', url);
+			});
+		});
+
+		function processUrl(url) {
+			return $.trim(url);
+		}
+		
+	</script>
+</body>
+</html>
