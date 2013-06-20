@@ -5,3 +5,22 @@ body {
 .image-map {
 	border: 1px solid #ddd;
 }
+
+#image-holder {
+	/* so the coordinate box can be relative */
+	position: relative;
+}
+
+#mapping-added {
+	margin: 10px 0;
+}
+
+.coord-box {
+	background-color: rgba(0,0,0,0.2);
+	border: 1px solid #555;
+	position: absolute;
+}
+
+.hide { 
+	display: none;
+}

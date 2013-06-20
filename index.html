@@ -16,8 +16,9 @@
 	<div id="container">
 		<div class="row">
 			<div class="span8">
-				<img class="image-map" src="img/Shipping-Labor-MHA.jpeg" />
-
+				<div id="image-holder">
+					<img class="image-map" src="img/Shipping-Labor-MHA.jpeg" />
+				</div>
 
 			</div>
 
@@ -25,28 +26,30 @@
 				<label>Enter URL</label>
 				<input type="text" id="urlInput" /><br/>
 				<button id="applyMappingBtn" class="btn btn-primary">Apply Mapping</button>
+
+				<ul id="mapping-added">
+
+				</ul>
+			</div>
 			</div>
 
 		</div>
 
-
 	</div>
 
+	
 	
 
 	<script src="script/imageMapper.js"></script>
 	<script type="text/javascript">
 		$(document).ready(function() {
 			console.log('here');
-			$.imageMapper({
-				onDrag: function(coordinates) {
-					
-				}
-			});
+			$.imageMapper();
 
 			$('#applyMappingBtn').click(function() {
 				var url = processUrl($('#urlInput').val());
 				$.imageMapper('insertMap', url);
+				$('#mapping-added').prepend('<li>Added link to ' + url);
 			});
 		});
 

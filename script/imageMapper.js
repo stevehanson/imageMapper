@@ -21,6 +21,10 @@
         this.clickActive = false;
         this.startCoords = undefined;
         this.endCoords = undefined;
+        this.coordBox = $('<div/>', {
+            'class': 'coord-box', 
+            'style': 'display:none'
+        }).insertAfter(this.$e);
 
         this.cnt = 0;
         this.init();
@@ -38,26 +42,52 @@
             t.startCoords = getObjClickCoords(this, e);
             console.log(t.startCoords);
 
+            t.coordBox.css({
+                top: t.startCoords.y, 
+                right: 'auto',
+                bottom: 'auto',
+                left: t.startCoords.x,
+                width: 0,
+                height: 0
+            }).show();
+
+        $(document).one('mouseup',function(e){
+            // only if click started on the image
+            if(t.clickActive) {
+                log('mouseup');
+                t.clickActive = false;
+
+                t.endCoords = getObjClickCoords($e, e);
+                console.log(t.endCoords);
+                
+            }
+        });
+
+        $(document).mousemove(function(e){
+            if(t.clickActive) {
+                var offset = $e.offset();
+                var pos = {x: e.pageX - offset.left, y: e.pageY - offset.top};
+                var corners = getFourCorners(t.startCoords, pos);
+                console.log(corners);
+                t.coordBox.css({
+                    top: corners.top, 
+                    left: corners.left,
+                    width: corners.right-corners.left,
+                    height: corners.bottom-corners.top
+                });
+
+
+            }
+            return false;
+        });
+
+
+
+
             e.preventDefault();
         });
 
-        $e.mouseup(function(e){
-            // only if click started on the image
-            if(t.clickActive) {
-                
-                t.clickActive = false;
-                t.endCoords = getObjClickCoords(this, e);
-                console.log(t.endCoords);
-
-                t.insertOrUpdateMap();
-                var mapId = 'imageMap'+t.cnt;
-                $e.attr('usemap', '#'+mapId);
-                t.cnt++;
-
-                
-
-            }
-        });
+        
         
     };
 
@@ -71,19 +101,23 @@
             coords: t.coordsList().join(','),
             href: href
         }));
+
+        this.coordBox.hide();
     };
 
     Plugin.prototype.insertOrUpdateMap = function() {
         var $e = this.$e, t = this;
+        var mapId = 'imageMap';
+
         if($e.attr('usemap') !== undefined) {
-            var mapId = $e.attr('usemap');
-            var $map = $('map[name="'+mapId.substring(1)+'"]');
+            // map exists
+            var $map = $('#'+mapId);
         } else {
             // map doesn't exist, create
-            var mapId = 'imageMap'+t.cnt;
             $e.attr('usemap', '#'+mapId);
             var $map = $('<map/>', {
-                'name': mapId
+                'name': mapId,
+                'id': mapId
             });
             $e.after($map);
         }
@@ -101,6 +135,47 @@
         return { x: imgPosX, y: imgPosY };
     }
 
+    function getFourCorners(a, b) {
+        var corners = {};
+        if(a.x <= b.x) { // a leftmost
+            corners.left = a.x;
+            corners.right = b.x;
+            if(a.y > b.y) { // b topmost
+                corners.top = b.y;
+                corners.bottom = a.y;
+                corners.topLeft = {x:a.x, y:b.y};
+                corners.topRight = {x:b.x, y:b.y};
+                corners.bottomLeft = {x:a.x, y:a.y};
+                corners.bottomRight = {x:b.x, y:a.y};
+            } else { // a topmost
+                corners.top = a.y;
+                corners.bottom = b.y;
+                corners.topLeft = {x:a.x, y:a.y};
+                corners.topRight = {x:b.x, y:a.y};
+                corners.bottomLeft = {x:a.x, y:b.y};
+                corners.bottomRight = {x:b.x, y:b.y};
+            }
+        } else { // b leftmost
+            corners.left = b.x;
+            corners.right = a.x;
+            if(a.y > b.y) { // b topmost
+                corners.top = b.y;
+                corners.bottom = a.y;
+                corners.topLeft = {x:b.x, y:b.y};
+                corners.topRight = {x:a.x, y:b.y};
+                corners.bottomLeft = {x:b.x, y:a.y};
+                corners.bottomRight = {x:a.x, y:a.y};
+            } else { // a topmost
+                corners.top = a.y;
+                corners.bottom = b.y;
+                corners.topLeft = {x:b.x, y:a.y};
+                corners.topRight = {x:a.x, y:a.y};
+                corners.bottomLeft = {x:b.x, y:b.y};
+                corners.bottomRight = {x:a.x, y:b.y};
+            }
+        }
+        return corners;
+    }
 
     
     $.imageMapper = function ( options, args ) {
